@@ -1,6 +1,6 @@
 //Nevan Samadhana
 //SID:1539153
-//pa4
+//pa5
 //Graph.h
 //Header file for Graph
 #ifndef _Graph_H_Include
@@ -21,6 +21,8 @@ int getSource(Graph G);
 int getParent(Graph G, int u);
 int getDist(Graph G, int u);
 void getPath(List L, Graph G, int u);
+int getDiscover(Graph G, int u);
+int getFinish(Graph G, int u);
 
 void printPath(Graph G, List L, int s, int x);
 
@@ -31,6 +33,8 @@ void addArc(Graph G, int u, int v);
 void printGraph(FILE* out, Graph G);
 
 Graph transpose(Graph g);
+Graph  copyGraph(Graph G);
+void DFS(Graph G, List S);
 
 
 #endif

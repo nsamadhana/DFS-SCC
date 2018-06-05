@@ -1,11 +1,8 @@
 #------------------------------------------------------------------------------
-#  Makefile for CMPS 101 Programming Assignment 5
-#
-#  make                     makes FindComponents
-#  make GraphClient         makes GraphClient
-#  make clean               removes binaries
-#  make checkFind           tests FindComponents for memory leaks on in3
-#  make checkClient         tests GraphClient for memory leaks
+#Nevan Samadhana
+#pa5
+#SID: 1539153
+#Makefile
 #------------------------------------------------------------------------------
 
 BASE_SOURCES   = Graph.c List.c
