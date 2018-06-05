@@ -209,6 +209,21 @@ void addArc(Graph G, int u, int v){
   G->size++;
 }
 
+//Returns the transpose of a graph
+Graph transpose(Graph G){
+  Graph transpose = newGraph(getOrder(G));
+  for(int i=1;i<getOrder(G);i++){
+    List adjacent = G->neighbour[i];
+    moveFront(adjacent);
+    while(index(adjacent)!=-1){
+      int val = get(adjacent);
+      addArc(transpose,val,i);
+      moveNext(adjacent);
+    }
+  }
+  return transpose;
+}
+
 //Resets a graph to its original empty state
 void makeNull(Graph G){
   for(int i=1;i<G->order+1;i++){

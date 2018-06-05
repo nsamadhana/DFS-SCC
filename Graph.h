@@ -30,5 +30,7 @@ void addArc(Graph G, int u, int v);
 
 void printGraph(FILE* out, Graph G);
 
+Graph transpose(Graph g);
+
 
 #endif
