@@ -8,7 +8,7 @@
 #include "List.h"
 //Macros------------------
 #define INF -1 //Infinity represented as -1
-#define NIL -2 //Nil, represented as -2
+#define NIL 0 //Nil, represented as -2
 #define UNDEF -3 //Undefined, represented as -3
 typedef struct GraphObj* Graph;
 Graph newGraph(int n);

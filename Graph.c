@@ -46,27 +46,22 @@ Graph newGraph(int n){
 
 void freeGraph(Graph* pG){//Frees memory associated with a graph
   int i;
-  for(i=1; i<(*pG)->order+1;i++){
-    if(i==0){
-      free((*pG)->neighbour[0]);
-    }else{
-      freeList(&(*pG)->neighbour[i]);
-    }
+  for(i=1; i<=(*pG)->order;i++){
+    freeList(&(*pG)->neighbour[i]);
   }
   free((*pG)->color); //Free up memory of the arrays
   free((*pG)->parent);
-  free((*pG)->distance);
+  free((*pG)->discover);
+  free((*pG)->finish);
+  free((*pG)->neighbour);
   free(*pG);
+
   *pG = NULL;
 }
 
 //Returns the number of vertices
 int getOrder(Graph G){
-  if(getSource(G)==0){
-    return NIL;
-  }else{
     return(G->order);
-  }
 }
 
 //Returns the number of edges
@@ -110,15 +105,12 @@ int getFinish(Graph G, int u){
 
 //Returns parent of a vertex
 int getParent(Graph G, int u){
-  if(1>u || u>getOrder(G)){ //Checks preconditions
-    printf("getParent() called with invalid argument");
-    exit(1);
+  if(1<=u && u<=getOrder(G))
+  {
+    return(G->parent[u]);
   }else{
-    if(getSource(G)==NIL){
-      return NIL;
-    }else{
-      return(G->parent[u]);
-    }
+    printf("Callin getParent() with invalid arguments");
+    exit(1);
   }
 }
 
@@ -190,29 +182,30 @@ void addEdge(Graph G, int u, int v){
 
 //Adds a directed edge from u to v
 void addArc(Graph G, int u, int v){
-  if(u<1 || u>getOrder(G) || v<1|| v>getOrder(G)){ //Check preconditions
-    printf("Calling addEdge() with invalid vertices.");
-    return;
-  }
-  List A = G->neighbour[u]; //Exact same code as addEdge(), but only on one side
-  moveFront(A);
-  for(int i=0;i<=length(A);i++){
-    if(index(A)==-1){
-      append(A,v);
-      break;
-    }else if(get(A)>v){
-      insertBefore(A,v);
-      break;
+  if(1<=u && u <= getOrder(G) && 1<=v && v<= getOrder(G)){
+    List A = G->neighbour[u]; //Exact same code as addEdge(), but only on one side
+    moveFront(A);
+    for(int i=0;i<=length(A);i++){
+      if(index(A)==-1){
+        append(A,v);
+        break;
+      }else if(get(A)>v){
+        insertBefore(A,v);
+        break;
+      }
+      moveNext(A);
     }
-    moveNext(A);
+    G->size++;
+  }else{
+    printf("Calling addArc() with invalid arguments");
+    exit(1);
   }
-  G->size++;
 }
 
 //Returns the transpose of a graph
 Graph transpose(Graph G){
   Graph transpose = newGraph(getOrder(G));
-  for(int i=1;i<getOrder(G);i++){
+  for(int i=1;i<getOrder(G)+1;i++){
     List adjacent = G->neighbour[i];
     moveFront(adjacent);
     while(index(adjacent)!=-1){
@@ -222,6 +215,20 @@ Graph transpose(Graph G){
     }
   }
   return transpose;
+}
+
+Graph copyGraph(Graph G){
+  Graph copy = newGraph(getOrder(G));
+  for(int i=1;i<getOrder(G)+1;i++){
+    copy->neighbour[i] = G->neighbour[i];
+    copy->color[i] = G->color[i];
+    copy->discover[i] = G->discover[i];
+    copy->finish[i] = G->finish[i];
+    copy->parent[i] = G->parent[i];
+  }
+  copy->order = G->order;
+  copy->size = G->size;
+  return copy;
 }
 
 //Resets a graph to its original empty state
@@ -234,6 +241,49 @@ void makeNull(Graph G){
   }
   G->size = 0;
   G->label = 0;
+}
+
+//visits a vertex
+void Visit(Graph G, int x, int *time, List S){
+  G->color[x] = 1; //Set the color to grey
+  G->discover[x] = ++ (*time);
+  List adjacent = G->neighbour[x];
+  moveFront(adjacent); //Place the cursor at the front
+  while(index(adjacent)!=-1){ //Iterate through the list of neighborus
+    int value = get(adjacent);
+    if(G->color[value]==0){ //If neighbour is undiscovered, make x the parent
+      G->parent[value] = x;
+      Visit(G, value, time, S);
+    }
+    moveNext(adjacent); //Move to the next value in the list of neighbours
+  }
+    G->color[x] = 2; //Finish x/color it black
+    G->finish[x] = ++ (*time);
+    prepend(S, x);
+}
+
+//Depth first search
+void DFS(Graph G, List S){
+  int time = 0; //Set time to 0
+  moveFront(S);
+  while(index(S)!=-1){ //Initialize
+    int value = get(S);
+    G->color[value]=0;
+    G->parent[value]=NIL;
+    moveNext(S);
+  }
+
+  moveFront(S); //PLace the cursor back at the front
+  while(index(S)!=-1){
+    int value = get(S);
+    if(G->color[value]==0){
+      Visit(G, value, &time, S);
+    }
+    moveNext(S);
+  }
+  for(int i =0; i<getOrder(G);i++){
+    deleteBack(S);
+  }
 }
 
 //Prints out the graph
