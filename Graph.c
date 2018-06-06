@@ -46,7 +46,7 @@ Graph newGraph(int n){
 
 void freeGraph(Graph* pG){//Frees memory associated with a graph
   int i;
-  for(i=1; i<=(*pG)->order;i++){
+  for(i=1; i<(*pG)->order+1;i++){
     freeList(&(*pG)->neighbour[i]);
   }
   free((*pG)->color); //Free up memory of the arrays
@@ -55,7 +55,6 @@ void freeGraph(Graph* pG){//Frees memory associated with a graph
   free((*pG)->finish);
   free((*pG)->neighbour);
   free(*pG);
-
   *pG = NULL;
 }
 
@@ -66,11 +65,7 @@ int getOrder(Graph G){
 
 //Returns the number of edges
 int getSize(Graph G){
-  if(getSource(G)==0){
-    return NIL;
-  }else{
     return(G->size);
-  }
 }
 
 //Returns the source
@@ -109,7 +104,7 @@ int getParent(Graph G, int u){
   {
     return(G->parent[u]);
   }else{
-    printf("Callin getParent() with invalid arguments");
+    printf("Calling getParent() with invalid arguments");
     exit(1);
   }
 }
@@ -260,6 +255,21 @@ void Visit(Graph G, int x, int *time, List S){
     G->color[x] = 2; //Finish x/color it black
     G->finish[x] = ++ (*time);
     prepend(S, x);
+}
+
+List SCC(Graph G, List S){
+  List scc = newList(); //Empty list that will be returned
+  moveBack(S);
+  while(index(S)!=-1){
+    int val = get(S);
+    prepend(scc,val);
+    // printf("parent: %d\n", getParent(G,val));
+    // if(getParent(G, val)==NIL){ //If the parent is Nil, add a 0 as a marker
+    //   prepend(scc, 0);
+    // }
+    movePrev(S);
+  }
+  return scc;
 }
 
 //Depth first search

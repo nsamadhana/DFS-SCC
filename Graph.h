@@ -35,6 +35,7 @@ void printGraph(FILE* out, Graph G);
 Graph transpose(Graph g);
 Graph  copyGraph(Graph G);
 void DFS(Graph G, List S);
+List SCC(Graph G, List S);
 
 
 #endif
